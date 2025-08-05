@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/04bf434496c74f23b467cfcbf7574bed/artifacts
+end_time: 1754413500409
+entry_point_name: ''
+experiment_id: '328728294591235620'
+lifecycle_stage: active
+run_id: 04bf434496c74f23b467cfcbf7574bed
+run_name: Logistic Regression
+run_uuid: 04bf434496c74f23b467cfcbf7574bed
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1754413491577
+status: 3
+tags: []
+user_id: sarit

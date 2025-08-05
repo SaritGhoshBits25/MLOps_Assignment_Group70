@@ -1,0 +1,107 @@
+name: MLOps CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run data preprocessing
+      run: |
+        python src/data_preprocessing.py
+    
+    - name: Train models
+      run: |
+        python src/train.py
+    
+    - name: Run tests
+      run: |
+        pytest tests/ -v
+    
+    - name: Test API startup
+      run: |
+        timeout 30s python src/api.py &
+        sleep 10
+        curl -f http://localhost:8000/health || exit 1
+        pkill -f "python src/api.py"
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    
+    - name: Install dependencies and train model
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        python src/data_preprocessing.py
+        python src/train.py
+    
+    - name: Build Docker image
+      run: |
+        docker build -t iris-api:latest .
+    
+    - name: Test Docker container
+      run: |
+        docker run -d -p 8000:8000 --name test-container iris-api:latest
+        sleep 30
+        curl -f http://localhost:8000/health || exit 1
+        docker stop test-container
+        docker rm test-container
+    
+    - name: Log in to Docker Hub (Optional)
+      if: false  # Set to true and add secrets if you want to push to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Push to Docker Hub (Optional)
+      if: false  # Set to true if you want to push to Docker Hub
+      run: |
+        docker tag iris-api:latest ${{ secrets.DOCKER_USERNAME }}/iris-api:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/iris-api:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy notification
+      run: |
+        echo "Deployment step - would deploy to production environment"
+        echo "This is where you would add your deployment scripts"

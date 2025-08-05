@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1754413506181
+current_stage: None
+description: null
+last_updated_timestamp: 1754413506181
+name: iris_svm
+run_id: b17adc6c82f6484ba900fec0b697f81b
+run_link: null
+source: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/b17adc6c82f6484ba900fec0b697f81b/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/b17adc6c82f6484ba900fec0b697f81b/artifacts/model
+user_id: null
+version: 1

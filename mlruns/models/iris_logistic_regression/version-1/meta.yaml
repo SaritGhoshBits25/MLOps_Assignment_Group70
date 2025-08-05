@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1754413500326
+current_stage: None
+description: null
+last_updated_timestamp: 1754413500326
+name: iris_logistic_regression
+run_id: 04bf434496c74f23b467cfcbf7574bed
+run_link: null
+source: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/04bf434496c74f23b467cfcbf7574bed/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/04bf434496c74f23b467cfcbf7574bed/artifacts/model
+user_id: null
+version: 1

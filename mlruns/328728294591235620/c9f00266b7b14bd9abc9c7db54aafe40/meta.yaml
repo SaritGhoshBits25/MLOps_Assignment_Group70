@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/c9f00266b7b14bd9abc9c7db54aafe40/artifacts
+end_time: 1754413503454
+entry_point_name: ''
+experiment_id: '328728294591235620'
+lifecycle_stage: active
+run_id: c9f00266b7b14bd9abc9c7db54aafe40
+run_name: Random Forest
+run_uuid: c9f00266b7b14bd9abc9c7db54aafe40
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1754413500433
+status: 3
+tags: []
+user_id: sarit

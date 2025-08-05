@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/b17adc6c82f6484ba900fec0b697f81b/artifacts
+end_time: 1754413506271
+entry_point_name: ''
+experiment_id: '328728294591235620'
+lifecycle_stage: active
+run_id: b17adc6c82f6484ba900fec0b697f81b
+run_name: SVM
+run_uuid: b17adc6c82f6484ba900fec0b697f81b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1754413503478
+status: 3
+tags: []
+user_id: sarit

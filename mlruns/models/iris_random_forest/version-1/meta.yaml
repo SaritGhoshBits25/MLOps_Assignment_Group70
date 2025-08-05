@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1754413503283
+current_stage: None
+description: null
+last_updated_timestamp: 1754413503283
+name: iris_random_forest
+run_id: c9f00266b7b14bd9abc9c7db54aafe40
+run_link: null
+source: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/c9f00266b7b14bd9abc9c7db54aafe40/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///D:/Workspace/MLOps_Assignment_Group70/mlruns/328728294591235620/c9f00266b7b14bd9abc9c7db54aafe40/artifacts/model
+user_id: null
+version: 1
