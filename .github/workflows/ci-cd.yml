@@ -92,8 +92,8 @@ jobs:
     - name: Push to Docker Hub (Optional)
       if: true  # Set to true if you want to push to Docker Hub
       run: |
-        docker tag iris-api:latest ${{ secrets.DOCKER_USERNAME }}/iris-api:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/iris-api:latest
+        docker tag iris-api:latest wp1412011989/iris-api:latest
+        docker push wp1412011989/iris-api:latest
 
   deploy:
     needs: build-and-push
