@@ -103,8 +103,6 @@ jobs:
     steps:
     - name: Run Docker container
       run: |
-        docker stop iris_container 2>$null || echo "No container to stop"
-        docker rm iris_container 2>$null || echo "No container to remove"
         docker run -d -p 8000:8000 --name iris_container wp1412011989/iris-api:latest
 
     - name: Deploy notification
