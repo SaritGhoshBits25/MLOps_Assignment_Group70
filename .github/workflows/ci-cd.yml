@@ -8,87 +8,89 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v3
-
+    
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
     - name: Install dependencies
       run: |
-        py -m pip install --upgrade pip
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
-
+    
     - name: Run data preprocessing
-      run: py src/data_preprocessing.py
-
+      run: |
+        python src/data_preprocessing.py
+    
     - name: Train models
-      run: py src/train.py
-
+      run: |
+        python src/train.py
+    
     - name: Run tests
-      run: pytest tests/ -v
-
+      run: |
+        pytest tests/ -v
+    
     - name: Test API startup
       run: |
-        Start-Process -NoNewWindow python src/api.py
-        Start-Sleep -Seconds 60
-        try {
-            $response = Invoke-WebRequest -Uri "http://localhost:8000/health" -UseBasicParsing
-            if ($response.StatusCode -ne 200) {
-                Write-Host "Health check failed with status code $($response.StatusCode)"
-                exit 1
-            }
-        }
-        catch {
-            Write-Host "Error during health check: $($_.Exception.Message)"
-            exit 1
-        }
-        Get-Process python | Where-Object { $_.Path -like "*python.exe" -and $_.StartInfo.Arguments -like "*src/api.py*" } | Stop-Process
+        timeout 30s python src/api.py &
+        sleep 10
+        curl -f http://localhost:8000/health || exit 1
+        pkill -f "python src/api.py"
 
   build-and-push:
     needs: test
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
     steps:
     - uses: actions/checkout@v3
-
+    
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    
     - name: Install dependencies and train model
       run: |
-        py -m pip install --upgrade pip
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
-        py src/data_preprocessing.py
-        py src/train.py
-
+        python src/data_preprocessing.py
+        python src/train.py
+    
     - name: Build Docker image
-      run: docker build -t iris-api:latest .
-
+      run: |
+        docker build -t iris-api:latest .
+    
     - name: Test Docker container
       run: |
         docker run -d -p 8000:8000 --name test-container iris-api:latest
-        Start-Sleep -Seconds 60
-        try {
-            $response = Invoke-WebRequest -Uri "http://localhost:8000/health" -UseBasicParsing
-            if ($response.StatusCode -ne 200) {
-                Write-Host "Health check failed with status code $($response.StatusCode)"
-                exit 1
-            }
-        }
-        catch {
-            Write-Host "Error during health check: $($_.Exception.Message)"
-            exit 1
-        }
+        sleep 30
+        curl -f http://localhost:8000/health || exit 1
         docker stop test-container
         docker rm test-container
-        
+    
     - name: Log in to Docker Hub
-      if: true  # Enable when Docker Hub secrets are set
+      if: true  # Set to true and add secrets if you want to push to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
     - name: Push to Docker Hub
-      if: true  # Enable when you want to push
+      if: true  # Set to true if you want to push to Docker Hub
       run: |
         docker tag iris-api:latest wp1412011989/iris-api:latest
         docker push wp1412011989/iris-api:latest
@@ -109,3 +111,4 @@ jobs:
       run: |
         echo "Deployment complete."
         echo "Production container running on port 8000."
+  
