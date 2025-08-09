@@ -12,28 +12,27 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+
     - name: Install dependencies
       run: |
         py -m pip install --upgrade pip
         pip install -r requirements.txt
-    
+
     - name: Run data preprocessing
-      run: |
-        py src/data_preprocessing.py
-    
+      run: py src/data_preprocessing.py
+
     - name: Train models
-      run: |
-        py src/train.py
-    
+      run: py src/train.py
+
     - name: Run tests
-      run: |
-        pytest tests/ -v
-    
+      run: pytest tests/ -v
+
     - name: Test API startup
       run: |
         Start-Process -NoNewWindow python src/api.py
         Start-Sleep -Seconds 10
-        curl -f http://localhost:8000/health || exit 1
+        $response = curl -f http://localhost:8000/health
+        if ($LASTEXITCODE -ne 0) { exit 1 }
         Get-Process python | Where-Object { $_.Path -like "*src/api.py*" } | Stop-Process
 
   build-and-push:
@@ -43,22 +42,23 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+
     - name: Install dependencies and train model
       run: |
         py -m pip install --upgrade pip
         pip install -r requirements.txt
         py src/data_preprocessing.py
         py src/train.py
-    
+
     - name: Build Docker image
-      run: |
-        docker build -t iris-api:latest .
-    
+      run: docker build -t iris-api:latest .
+
     - name: Test Docker container
       run: |
         docker run -d -p 8000:8000 --name test-container iris-api:latest
         Start-Sleep -Seconds 30
-        curl -f http://localhost:8000/health || exit 1
+        $response = curl -f http://localhost:8000/health
+        if ($LASTEXITCODE -ne 0) { exit 1 }
         docker stop test-container
         docker rm test-container
         
@@ -82,7 +82,11 @@ jobs:
     
     steps:
     - name: Run Docker container
-      run: docker run -d -p 8000:8000 --name iris_container wp1412011989/iris-api:latest
+      run: |
+        docker stop iris_container 2>$null || echo "No container to stop"
+        docker rm iris_container 2>$null || echo "No container to remove"
+        docker run -d -p 8000:8000 --name iris_container wp1412011989/iris-api:latest
+
     - name: Deploy notification
       run: |
         echo "Deployment step - would deploy to production environment"
