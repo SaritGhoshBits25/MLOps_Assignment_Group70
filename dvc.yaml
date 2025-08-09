@@ -1,0 +1,9 @@
+stages:
+  data_preprocessing:
+    cmd: python3 src/data_preprocessing.py
+    deps:
+      - src/data_preprocessing.py
+      - data/iris_raw.csv
+    outs:
+      - data/iris_train.csv
+      - data/iris_test.csv

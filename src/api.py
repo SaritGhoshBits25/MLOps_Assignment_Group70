@@ -1,5 +1,5 @@
 """
-Enhanced FastAPI application with comprehensive logging and monitoring
+FastAPI application with comprehensive logging and monitoring
 """
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -46,7 +46,7 @@ ACTIVE_MODELS_GAUGE = Gauge('active_models', 'Number of active models')
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Iris Classification API - Enhanced",
+    title="Iris Classification API",
     description="A comprehensive ML API with monitoring and logging",
     version="2.0.0"
 )
@@ -60,7 +60,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Enhanced Pydantic models with validation
+#  Pydantic models with validation
 class IrisFeatures(BaseModel):
     sepal_length: float = Field(..., description="Sepal length in cm", ge=0, le=20)
     sepal_width: float = Field(..., description="Sepal width in cm", ge=0, le=20)
@@ -222,13 +222,13 @@ async def startup_event():
     """Load model artifacts on startup"""
     os.makedirs('logs', exist_ok=True)
     load_model_artifacts()
-    logger.info("Enhanced API startup completed")
+    logger.info("API startup completed")
 
 @app.get("/")
 async def root():
     """Root endpoint with API information"""
     return {
-        "message": "Enhanced Iris Classification API",
+        "message": "Iris Classification API",
         "version": "2.0.0",
         "status": "healthy",
         "features": [
@@ -243,7 +243,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Enhanced health check endpoint"""
+    """health check endpoint"""
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
@@ -419,21 +419,19 @@ async def predict_batch(batch_request: BatchPredictionRequest, request: Request)
 @app.post("/retrain-trigger")
 async def trigger_retrain():
     """
-    Trigger model retraining (placeholder for future implementation)
+    Trigger model retraining
     """
+    
+    from retrain_pipeline import main
+    
     logger.info("Model retraining triggered")
     
-    # This would typically:
-    # 1. Check for new data
-    # 2. Validate data quality
-    # 3. Trigger training pipeline
-    # 4. Update model if performance improves
+    main()
     
     return {
         "message": "Model retraining triggered",
-        "status": "queued",
-        "timestamp": datetime.now().isoformat(),
-        "estimated_completion": "This is a placeholder - would implement actual retraining logic"
+        "status": "re-triggered",
+        "timestamp": datetime.now().isoformat()
     }
 
 if __name__ == "__main__":
@@ -444,7 +442,7 @@ if __name__ == "__main__":
         logger.error("Model not found. Please run 'python src/train.py' first.")
         exit(1)
     
-    # Run the enhanced API
+    # Run the  API
     uvicorn.run(
         "api:app",
         host="0.0.0.0",
