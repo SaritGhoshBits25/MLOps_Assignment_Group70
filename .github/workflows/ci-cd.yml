@@ -103,7 +103,7 @@ jobs:
     steps:
     - name: Run Docker container
       run: |
-        docker run -d -p 8000:8000 --name iris_container wp1412011989/iris-api:latest
+        docker-compose up -d
 
     - name: Deploy notification
       run: |
