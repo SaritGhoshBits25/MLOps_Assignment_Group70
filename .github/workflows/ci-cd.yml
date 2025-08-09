@@ -31,10 +31,10 @@ jobs:
     
     - name: Test API startup
       run: |
-        timeout 30s py src/api.py &
-        sleep 10
+        Start-Process -NoNewWindow python src/api.py
+        Start-Sleep -Seconds 10
         curl -f http://localhost:8000/health || exit 1
-        pkill -f "py src/api.py"
+        Get-Process python | Where-Object { $_.Path -like "*src/api.py*" } | Stop-Process
 
   build-and-push:
     needs: test
@@ -57,11 +57,11 @@ jobs:
     - name: Test Docker container
       run: |
         docker run -d -p 8000:8000 --name test-container iris-api:latest
-        sleep 30
+        Start-Sleep -Seconds 30
         curl -f http://localhost:8000/health || exit 1
         docker stop test-container
         docker rm test-container
-    
+        
     - name: Log in to Docker Hub
       if: true  # Set to true and add secrets if you want to push to Docker Hub
       uses: docker/login-action@v2
