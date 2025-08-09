@@ -31,7 +31,7 @@ jobs:
       run: |
         Start-Process -NoNewWindow python src/api.py
         Start-Sleep -Seconds 10
-        $response = curl -f http://localhost:8000/health
+        $response = Invoke-WebRequest -Uri "http://localhost:8000/health" -UseBasicParsing
         if ($LASTEXITCODE -ne 0) { exit 1 }
         Get-Process python | Where-Object { $_.Path -like "*src/api.py*" } | Stop-Process
 
@@ -57,7 +57,7 @@ jobs:
       run: |
         docker run -d -p 8000:8000 --name test-container iris-api:latest
         Start-Sleep -Seconds 30
-        $response = curl -f http://localhost:8000/health
+        $response = Invoke-WebRequest -Uri "http://localhost:8000/health" -UseBasicParsing
         if ($LASTEXITCODE -ne 0) { exit 1 }
         docker stop test-container
         docker rm test-container
